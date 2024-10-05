@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contagem de Medalhas</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif, sans-serif;
+            background-color: #0b0101;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #a4cefb;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label, input {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button.clear {
+            background-color: #ff4d4d;
+        }
+        #ranking {
+            margin-top: 20px;
+        }
+        .ranking-item {
+            padding: 5px 0;
+        }
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Contagem de Medalhas</h1>
+        <label for="pais">País:</label>
+        <input type="text" id="pais" placeholder="Digite o nome do país">
+        <span id="error-pais" class="error"></span>
+
+        <label for="ouro">Medalhas de Ouro:</label>
+        <input type="number" id="ouro" min="0" placeholder="Número de medalhas de ouro">
+
+        <label for="prata">Medalhas de Prata:</label>
+        <input type="number" id="prata" min="0" placeholder="Número de medalhas de prata">
+
+        <label for="bronze">Medalhas de Bronze:</label>
+        <input type="number" id="bronze" min="0" placeholder="Número de medalhas de bronze">
+
+        <button onclick="adicionarMedalhas()">Adicionar Medalhas</button>
+        <button class="clear" onclick="limparRanking()">Limpar Ranking</button>
+        
+        <div id="ranking"></div>
+    </div>
+
+    <script>
+        const paises = {};
+
+        function adicionarMedalhas() {
+            const pais = document.getElementById("pais").value;
+            const ouro = parseInt(document.getElementById("ouro").value) || 0;
+            const prata = parseInt(document.getElementById("prata").value) || 0;
+            const bronze = parseInt(document.getElementById("bronze").value) || 0;
+            
+            if (!pais) {
+                document.getElementById("error-pais").textContent = "Por favor, insira o nome do país.";
+                return;
+            } else {
+                document.getElementById("error-pais").textContent = "";
+            }
+
+            const total = ouro + prata + bronze;
+            if (paises[pais]) {
+                paises[pais] += total;
+            } else {
+                paises[pais] = total;
+            }
+
+            limparCampos();
+            atualizarRanking();
+        }
+
+        function atualizarRanking() {
+            const rankingDiv = document.getElementById("ranking");
+            rankingDiv.innerHTML = "<h2>Ranking de Medalhas</h2>";
+
+            const ranking = Object.entries(paises)
+                .sort((a, b) => b[1] - a[1])
+                .map(([pais, total]) => `<div class="ranking-item">#${pais}: ${total} medalhas</div>`);
+
+            rankingDiv.innerHTML += ranking.join("");
+        }
+
+        function limparCampos() {
+            document.getElementById("pais").value = "";
+            document.getElementById("ouro").value = "";
+            document.getElementById("prata").value = "";
+            document.getElementById("bronze").value = "";
+        }
+
+        function limparRanking() {
+            const confirmacao = confirm("Você tem certeza que deseja limpar o ranking?");
+            if (confirmacao) {
+                for (let pais in paises) {
+                    delete paises[pais];
+                }
+                document.getElementById("ranking").innerHTML = "";
+                alert("Ranking limpo com sucesso!");
+            }
+        }
+    </script>
+</body>
+</html>
